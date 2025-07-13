@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Your Skin</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<div class="background"></div>
+
+<nav>
+    <a href="{% url 'home' %}" style="display: flex; align-items: center; text-decoration: none;">
+        <img src="{% static 'images/skindx_icon.png' %}" alt="Logo" style="height: 40px; margin-right: 10px;">
+        <div class="logo">SkinDx</div>
+    </a>
+    <div class="links">
+        <a href="{% url 'home' %}" class="active">Home</a>
+        <a href="#">About us</a>
+        <a href="#">Services</a>
+        <a href="{% url 'logout' %}" class="btn-login">Hi, {{ user.first_name }}</a>
+    </div>
+</nav>
+
+<h1 class="login-title">Test Your Skin</h1>
+
+<div class="login-card">
+    {% if prediction %}
+        <img src="{{ prediction.image }}" alt="Uploaded Image" style="width: 250px; border-radius: 12px; margin-bottom: 20px;">
+        <div style="padding: 20px; border: 2px dashed #6495ed; border-radius: 12px; margin-top: 20px; font-size: 20px;">
+            <strong>Possible Skin Issue:</strong>
+            <span style="float: right;">{{ prediction.label }} ({{ prediction.confidence }})</span>
+        </div>
+    {% else %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div style="display: flex; justify-content: center; align-items: center; gap: 12px;">
+                <img src="{% static 'images/hero_icon.png' %}" style="height: 50px; background: #3d3d3d; padding: 10px; border-radius: 8px;">
+                <div>
+                    <input type="file" name="image" accept="image/*" required>
+                    <p style="font-size: 12px; font-style: italic; color: lightgray;">Please upload square image, size less than 1024kb</p>
+                </div>
+            </div>
+            <button type="submit" class="cta" style="margin-top: 20px;">UPLOAD</button>
+        </form>
+    {% endif %}
+</div>
+
+</body>
+</html>

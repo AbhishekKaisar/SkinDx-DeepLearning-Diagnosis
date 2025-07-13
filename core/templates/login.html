@@ -1,0 +1,41 @@
+{% load static %}
+{% load socialaccount %}  <!-- ✅ Load the tag for provider_login_url -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - SkinDx</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/skindx_icon.png' %}">
+</head>
+<body>
+
+<div class="background"></div>
+
+<nav>
+  <a href="{% url 'home' %}" class="logo">
+    <img src="{% static 'images/skindx_icon.png' %}" alt="SkinDx Logo">
+    <span>SkinDx</span>
+  </a>
+  <div class="links">
+    <a href="{% url 'home' %}" class="active">Home</a>
+    <a href="#">About us</a>
+    <a href="#">Services</a>
+    <a href="{% url 'login' %}" class="btn-login">Login</a>
+  </div>
+</nav>
+
+
+<h1 class="login-title">Login</h1>
+
+<div class="login-card">
+    <h2>Login to your Account</h2>
+    <a href="{% provider_login_url 'google' %}" class="google-btn">
+        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
+        Google
+    </a>
+</div>
+
+</body>
+</html>
