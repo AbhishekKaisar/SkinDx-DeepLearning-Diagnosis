@@ -106,6 +106,13 @@ STATICFILES_DIRS = [BASE_DIR / 'core/static']
 # STATIC_ROOT = BASE_DIR / 'staticfiles'  # Uncomment for production `collectstatic`
 
 # --------------------------------------------------
+# Media files
+# --------------------------------------------------
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# --------------------------------------------------
 # Default primary key field type
 # --------------------------------------------------
 
@@ -129,5 +136,13 @@ ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = 'none'  # Change to 'mandatory' in production
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+
+# --------------------------------------------------
+# SSLCommerz Configuration
+# --------------------------------------------------
+
+SSLCOMMERZ = {
+    'store_id': 'solvo68849db11c233',
+    'store_pass': 'solvo68849db11c233@ssl',
+    'sandbox': True  # Set to False when using real credentials
+}

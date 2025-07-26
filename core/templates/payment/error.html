@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Failed</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="content">
+        <h1 style="color: red;">❌ Payment Failed</h1>
+        <p>We're sorry! Your payment could not be processed.</p>
+
+        {% if error %}
+            <h3>Details:</h3>
+            <pre style="color: #333; background: #eee; padding: 10px;">{{ error }}</pre>
+        {% endif %}
+
+        <a href="{% url 'trial_ends' %}" style="margin-top: 20px; display: inline-block;">Try Again</a>
+    </div>
+</body>
+</html>

@@ -30,7 +30,7 @@
         <div class="card payment-card">
             <h1 class="login-title">Trial Ends</h1>
             <p class="payment-subtitle">Total price</p>
-            <h2 class="payment-price">$ 33,79</h2>
+            <h2 class="payment-price">$ 33.79</h2>
 
             <div class="payment-options">
                 <div class="payment-option"> Pay</div>
@@ -40,12 +40,16 @@
                     To pay, please enter your VISA, MasterCard or Maestro payment card information.
                 </div>
                 <div class="payment-option description">
-                    <strong🏦>Pay via internet banking</strong><br>
+                    <strong>🏦 Pay via internet banking</strong><br>
                     Just select your bank and make the payment.
                 </div>
             </div>
 
-            <a href="#" class="pay-now-btn">Pay Now</a>
+            <!-- ✅ This is the working Pay Now form -->
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" class="pay-now-btn">Pay Now</button>
+            </form>
         </div>
     </div>
 </body>

@@ -8,6 +8,10 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('trial-ends/', views.trial_ends, name='trial_ends'),
 
+    # New payment response routes
+    path('payment/success/', views.payment_success, name='payment_success'),
+    path('payment/fail/', views.payment_fail, name='payment_fail'),
+    path('payment/cancel/', views.payment_cancel, name='payment_cancel'),
 ]
 
 # Serve uploaded media files during development
