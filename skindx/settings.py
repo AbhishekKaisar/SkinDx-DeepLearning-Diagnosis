@@ -28,6 +28,7 @@ INSTALLED_APPS = [
 
     # Your custom app
     'core',
+    'sslcommerz',
 
     # Allauth apps
     'allauth',
@@ -103,7 +104,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'core/static']
-# STATIC_ROOT = BASE_DIR / 'staticfiles'  # Uncomment for production `collectstatic`
 
 # --------------------------------------------------
 # Default primary key field type
@@ -128,6 +128,16 @@ LOGOUT_REDIRECT_URL = '/'
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = 'none'  # Change to 'mandatory' in production
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# --------------------------------------------------
+# SSLCommerz Configuration
+# --------------------------------------------------
+
+SSLCOMMERZ = {
+    'store_id': 'skind68831004056f6',
+    'store_pass': 'skind68831004056f6@ssl',
+    'sandbox': True,  # Set to False in production
+}

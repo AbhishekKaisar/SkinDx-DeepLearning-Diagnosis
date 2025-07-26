@@ -1,41 +1,40 @@
 {% load static %}
-{% load socialaccount %}  <!-- ✅ Load the tag for provider_login_url -->
+{% load socialaccount %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login - SkinDx</title>
+    <title>Login</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="icon" type="image/png" href="{% static 'images/skindx_icon.png' %}">
 </head>
 <body>
+    <div class="background"></div>
+    <div class="content">
+        <nav>
+            <a href="{% url 'home' %}" class="logo">
+                <img src="{% static 'images/skindx_icon.png' %}" alt="SkinDx Logo">
+                <span>SkinDx</span>
+            </a>
+            <div class="links">
+                <a href="{% url 'home' %}" class="active">Home</a>
+                <a href="#">About us</a>
+                <a href="#">Services</a>
+            </div>
+        </nav>
 
-<div class="background"></div>
+        <div class="card login-card">
+            <h1 class="login-title">Login</h1>
+            <p class="login-subtitle">
+                To continue, please log in with your Google account.
+            </p>
 
-<nav>
-  <a href="{% url 'home' %}" class="logo">
-    <img src="{% static 'images/skindx_icon.png' %}" alt="SkinDx Logo">
-    <span>SkinDx</span>
-  </a>
-  <div class="links">
-    <a href="{% url 'home' %}" class="active">Home</a>
-    <a href="#">About us</a>
-    <a href="#">Services</a>
-    <a href="{% url 'login' %}" class="btn-login">Login</a>
-  </div>
-</nav>
-
-
-<h1 class="login-title">Login</h1>
-
-<div class="login-card">
-    <h2>Login to your Account</h2>
-    <a href="{% provider_login_url 'google' %}" class="google-btn">
-        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo">
-        Google
-    </a>
-</div>
-
+            <a href="{% provider_login_url 'google' %}" class="google-login-btn">
+                <img src="{% static 'images/google_icon.png' %}" alt="Google Icon">
+                <span>Continue with Google</span>
+            </a>
+        </div>
+    </div>
 </body>
 </html>

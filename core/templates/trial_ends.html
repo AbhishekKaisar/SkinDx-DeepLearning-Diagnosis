@@ -40,12 +40,15 @@
                     To pay, please enter your VISA, MasterCard or Maestro payment card information.
                 </div>
                 <div class="payment-option description">
-                    <strong🏦>Pay via internet banking</strong><br>
+                    <strong>🏦 Pay via internet banking</strong><br>
                     Just select your bank and make the payment.
                 </div>
             </div>
 
-            <a href="#" class="pay-now-btn">Pay Now</a>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="pay-now-btn">Pay Now</button>
+            </form>
         </div>
     </div>
 </body>
