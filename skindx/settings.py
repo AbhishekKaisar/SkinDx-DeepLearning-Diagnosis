@@ -1,5 +1,6 @@
 from pathlib import Path
 
+
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -11,6 +12,12 @@ DEBUG = True
 
 # ✅ Hosts for local development
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+# ✅ Allow external POST requests from SSLCommerz (sandbox and live)
+CSRF_TRUSTED_ORIGINS = [
+    "https://sandbox.sslcommerz.com",      # for test payments
+    "https://securepay.sslcommerz.com",    # for live payments (future use)
+]
 
 # --------------------------------------------------
 # Application definition
@@ -34,6 +41,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+
 ]
 
 MIDDLEWARE = [
@@ -76,6 +84,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
 
 # --------------------------------------------------
 # Password validation

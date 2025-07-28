@@ -5,6 +5,7 @@ from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 import uuid
 from core.sslcommerz.utils import initiate_payment
+from django.views.decorators.csrf import csrf_exempt
 
 
 def home(request):
@@ -89,17 +90,17 @@ def trial_ends(request):
     return render(request, 'trial_ends.html')
 
 
-@login_required
+@csrf_exempt
 def payment_success(request):
     return HttpResponse("✅ Payment successful! Thank you for subscribing to SkinDx.")
 
 
-@login_required
+@csrf_exempt
 def payment_fail(request):
     return HttpResponse("❌ Payment failed. Please try again or contact support.")
 
 
-@login_required
+@csrf_exempt
 def payment_cancel(request):
     return HttpResponse("⚠️ Payment was cancelled.")
 
