@@ -1,3 +1,5 @@
+from core.models import PhotoUpload, User
+from django.utils.timezone import now
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
@@ -6,6 +8,7 @@ from django.http import HttpResponse
 import uuid
 from core.sslcommerz.utils import initiate_payment
 from django.views.decorators.csrf import csrf_exempt
+from allauth.socialaccount.models import SocialAccount
 
 
 def home(request):
@@ -29,6 +32,28 @@ def test_skin(request):
         fs = FileSystemStorage()
         filename = fs.save(image.name, image)
         image_url = fs.url(filename)
+
+        # Save image info to PhotoUpload table
+        user = request.user
+        try:
+            social = SocialAccount.objects.get(user=user, provider='google')
+            google_uid = social.extra_data.get('sub')
+            custom_user = User.objects.get(google_uid=google_uid)
+            PhotoUpload.objects.create(
+                user_id=custom_user.user_id,
+                image_url=image_url,
+                uploaded_at=now()
+            )
+
+            # Decrease trial credits
+            if custom_user.trial_credits > 0:
+                custom_user.trial_credits -= 1
+                custom_user.save()
+
+        except User.DoesNotExist:
+            print("⚠️ User not found in custom User table.")
+        except SocialAccount.DoesNotExist:
+            print("⚠️ SocialAccount not found.")
 
         request.session['trial_count'] = trial_used + 1
 

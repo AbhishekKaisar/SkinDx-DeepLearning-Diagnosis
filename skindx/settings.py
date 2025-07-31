@@ -1,30 +1,28 @@
 from pathlib import Path
 
+# --------------------------------------------------
+# Basic Setup
+# --------------------------------------------------
 
-# Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# ⚠️ SECURITY: Keep secret key safe in production
 SECRET_KEY = 'django-insecure-e=xvm@k9k3jkns(zpkf7(6oj8n61qr4rf-diy$t1b06jfdxvri'
-
-# ⚠️ Turn off in production!
 DEBUG = True
-
-# ✅ Hosts for local development
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
-# ✅ Allow external POST requests from SSLCommerz (sandbox and live)
+# --------------------------------------------------
+# CSRF for SSLCommerz
+# --------------------------------------------------
+
 CSRF_TRUSTED_ORIGINS = [
-    "https://sandbox.sslcommerz.com",      # for test payments
-    "https://securepay.sslcommerz.com",    # for live payments (future use)
+    "https://sandbox.sslcommerz.com",
+    "https://securepay.sslcommerz.com",
 ]
 
 # --------------------------------------------------
-# Application definition
+# Installed Apps
 # --------------------------------------------------
 
 INSTALLED_APPS = [
-    # Default Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -33,16 +31,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    # Your custom app
-    'core',
+    'core.apps.CoreConfig',
 
-    # Allauth apps
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-
 ]
+
+# --------------------------------------------------
+# Middleware
+# --------------------------------------------------
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,12 +49,15 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'skindx.urls'
+
+# --------------------------------------------------
+# Templates
+# --------------------------------------------------
 
 TEMPLATES = [
     {
@@ -64,7 +66,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.request',  # Required by Allauth
+                'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -75,19 +77,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'skindx.wsgi.application'
 
 # --------------------------------------------------
-# Database
+# MySQL Database Configuration
 # --------------------------------------------------
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'skindx',
+        'USER': 'root',
+        'PASSWORD': '',  # Set your MySQL password if any
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
     }
 }
 
-
 # --------------------------------------------------
-# Password validation
+# Password Validation
 # --------------------------------------------------
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -98,7 +103,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # --------------------------------------------------
-# Internationalization
+# Time & Language
 # --------------------------------------------------
 
 LANGUAGE_CODE = 'en-us'
@@ -107,28 +112,23 @@ USE_I18N = True
 USE_TZ = True
 
 # --------------------------------------------------
-# Static files (CSS, JavaScript, Images)
+# Static & Media Files
 # --------------------------------------------------
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'core/static']
-# STATIC_ROOT = BASE_DIR / 'staticfiles'  # Uncomment for production `collectstatic`
-
-# --------------------------------------------------
-# Media files
-# --------------------------------------------------
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # --------------------------------------------------
-# Default primary key field type
+# Django Defaults
 # --------------------------------------------------
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+SITE_ID = 1
 
 # --------------------------------------------------
-# Django Allauth Configuration
+# Allauth Login Settings (no username)
 # --------------------------------------------------
 
 AUTHENTICATION_BACKENDS = (
@@ -136,22 +136,35 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-SITE_ID = 1
-
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = 'none'  # Change to 'mandatory' in production
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 
 # --------------------------------------------------
 # SSLCommerz Configuration
 # --------------------------------------------------
 
+
 SSLCOMMERZ = {
     'store_id': 'solvo68849db11c233',
     'store_pass': 'solvo68849db11c233@ssl',
-    'sandbox': True  # Set to False when using real credentials
+    'sandbox': True
+}
+
+# --------------------------------------------------
+# Social Account Providers
+# --------------------------------------------------
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'https://www.googleapis.com/auth/userinfo.email',
+            'https://www.googleapis.com/auth/userinfo.profile',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
 }
