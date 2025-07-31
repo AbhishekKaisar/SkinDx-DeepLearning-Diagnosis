@@ -24,6 +24,12 @@
 
 <h1 class="login-title">Test Your Skin</h1>
 
+{% if user.is_authenticated %}
+    <p style="text-align: center; color: #aaa; font-size: 14px;">
+        You have <strong>{{ trial_credits }}</strong> free upload{{ trial_credits|pluralize }} left.
+    </p>
+{% endif %}
+
 <div class="login-card">
     {% if prediction %}
         <img src="{{ prediction.image }}" alt="Uploaded Image" style="width: 250px; border-radius: 12px; margin-bottom: 20px;">

@@ -21,9 +21,13 @@ def login_view(request):
 
 @login_required
 def test_skin(request):
-    trial_used = request.session.get('trial_count', 0)
-
-    if trial_used >= 3:
+    try:
+        social = SocialAccount.objects.get(user=request.user, provider='google')
+        google_uid = social.extra_data.get('sub')
+        custom_user = User.objects.get(google_uid=google_uid)
+        if custom_user.trial_credits <= 0:
+            return redirect('trial_ends')
+    except Exception:
         return redirect('trial_ends')
 
     if request.method == 'POST' and request.FILES.get('image'):
@@ -39,10 +43,20 @@ def test_skin(request):
             social = SocialAccount.objects.get(user=user, provider='google')
             google_uid = social.extra_data.get('sub')
             custom_user = User.objects.get(google_uid=google_uid)
-            PhotoUpload.objects.create(
+            upload = PhotoUpload.objects.create(
                 user_id=custom_user.user_id,
                 image_url=image_url,
                 uploaded_at=now()
+            )
+            from core.models import TestResult
+            from decimal import Decimal
+            prediction = "Melanoma"
+            confidence = Decimal("0.94")
+            TestResult.objects.create(
+                upload_id=upload.upload_id,
+                disease_name=prediction,
+                confidence=confidence,
+                tested_at=now()
             )
 
             # Decrease trial credits
@@ -55,26 +69,46 @@ def test_skin(request):
         except SocialAccount.DoesNotExist:
             print("⚠️ SocialAccount not found.")
 
-        request.session['trial_count'] = trial_used + 1
-
-        prediction = "Melanoma"
-        confidence = "94%"
-
         return render(request, 'test_skin.html', {
             'prediction': {
                 'label': prediction,
                 'confidence': confidence,
                 'image': image_url,
-            }
+            },
+            'trial_credits': custom_user.trial_credits
         })
 
-    return render(request, 'test_skin.html')
+    try:
+        social = SocialAccount.objects.get(user=request.user, provider='google')
+        google_uid = social.extra_data.get('sub')
+        custom_user = User.objects.get(google_uid=google_uid)
+        trial_credits = custom_user.trial_credits
+    except Exception:
+        trial_credits = 0
+    return render(request, 'test_skin.html', {
+        'trial_credits': trial_credits
+    })
 
 
 @login_required
 def trial_ends(request):
     if request.method == 'POST':
         tran_id = str(uuid.uuid4())
+        try:
+            social = SocialAccount.objects.get(user=request.user, provider='google')
+            google_uid = social.extra_data.get('sub')
+            custom_user = User.objects.get(google_uid=google_uid)
+            from core.models import Payment
+            Payment.objects.create(
+                user_id=custom_user.user_id,
+                transaction_id=tran_id,
+                amount=33.79,
+                payment_method='bkash',
+                payment_status='pending'
+            )
+        except Exception as e:
+            print("⚠️ Failed to create payment record:", e)
+
         data = {
             'amount': '33.79',
             'tran_id': tran_id,
@@ -117,7 +151,23 @@ def trial_ends(request):
 
 @csrf_exempt
 def payment_success(request):
-    return HttpResponse("✅ Payment successful! Thank you for subscribing to SkinDx.")
+    from core.models import Payment
+    try:
+        tran_id = request.POST.get('tran_id') or request.GET.get('tran_id')
+        payment = Payment.objects.get(transaction_id=tran_id)
+        payment.payment_status = 'completed'
+        payment.paid_at = now()
+        payment.save()
+
+        user = payment.user
+        user.trial_credits += 5
+        user.save()
+
+        return HttpResponse("✅ Payment successful! Thank you for subscribing to SkinDx.")
+    except Payment.DoesNotExist:
+        return HttpResponse("⚠️ Payment record not found.")
+    except Exception as e:
+        return HttpResponse(f"❌ Payment update failed: {e}")
 
 
 @csrf_exempt
