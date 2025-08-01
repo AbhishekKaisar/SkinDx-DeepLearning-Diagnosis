@@ -12,6 +12,7 @@ urlpatterns = [
     path('payment/success/', views.payment_success, name='payment_success'),
     path('payment/fail/', views.payment_fail, name='payment_fail'),
     path('payment/cancel/', views.payment_cancel, name='payment_cancel'),
+    path('prediction-history/', views.prediction_history, name='prediction_history'),
 ]
 
 # Serve uploaded media files during development

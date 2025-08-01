@@ -1,3 +1,11 @@
+from keras.applications import EfficientNetB0
+from keras.layers import GlobalAveragePooling2D, Dense, Dropout
+from keras.models import Model
+from keras.preprocessing import image
+from PIL import Image
+import numpy as np
+import os
+
 from core.models import PhotoUpload, User
 from django.utils.timezone import now
 from django.shortcuts import render, redirect
@@ -9,6 +17,36 @@ import uuid
 from core.sslcommerz.utils import initiate_payment
 from django.views.decorators.csrf import csrf_exempt
 from allauth.socialaccount.models import SocialAccount
+
+import tensorflow as tf
+from keras import layers, applications
+
+# Global variable to store the model
+model = None
+
+
+def load_skin_model():
+    global model
+    if model is None:
+        weights_path = os.path.join(os.path.dirname(__file__), 'EfficientNetB0_best_model.weights.h5')
+
+        base_model = applications.EfficientNetB0(
+            include_top=False,
+            weights=None,
+            input_shape=(224, 224, 3)
+        )
+        base_model.trainable = False
+        inputs = tf.keras.Input(shape=(224, 224, 3))
+        x = tf.keras.applications.efficientnet.preprocess_input(inputs)
+        x = base_model(x, training=False)
+        x = layers.GlobalAveragePooling2D()(x)
+        x = layers.Dense(256, activation='relu')(x)
+        x = layers.Dropout(0.5)(x)
+        outputs = layers.Dense(1, activation='sigmoid')(x)
+
+        model_instance = tf.keras.Model(inputs, outputs)
+        model_instance.load_weights(weights_path)
+        model = model_instance
 
 
 def home(request):
@@ -49,13 +87,35 @@ def test_skin(request):
                 uploaded_at=now()
             )
             from core.models import TestResult
-            from decimal import Decimal
-            prediction = "Melanoma"
-            confidence = Decimal("0.94")
+            from decimal import Decimal, InvalidOperation
+            # Run real model prediction
+            load_skin_model()  # Ensure model is loaded
+
+            img_path = os.path.join(fs.location, filename)
+            img = Image.open(img_path).convert('RGB')  # Ensure 3 channels
+            img = img.resize((224, 224))
+            img_array = tf.keras.preprocessing.image.img_to_array(img)
+            img_array = np.expand_dims(img_array, axis=0)
+
+            pred = model.predict(img_array)[0][0]  # Sigmoid prediction
+
+            # Prepare label and confidence
+            label = "benign" if pred < 0.5 else "malignant"
+            confidence = pred if label == "malignant" else 1 - pred
+
+            try:
+                safe_confidence = Decimal(str(confidence)).quantize(Decimal('0.0001'))
+                if safe_confidence >= Decimal("1.0"):
+                    safe_confidence = Decimal("0.9999")
+                elif safe_confidence < Decimal("0.0"):
+                    safe_confidence = Decimal("0.0")
+            except (InvalidOperation, ValueError):
+                safe_confidence = Decimal("0.0")
+
             TestResult.objects.create(
                 upload_id=upload.upload_id,
-                disease_name=prediction,
-                confidence=confidence,
+                disease_name=label,
+                confidence=safe_confidence,
                 tested_at=now()
             )
 
@@ -71,9 +131,15 @@ def test_skin(request):
 
         return render(request, 'test_skin.html', {
             'prediction': {
-                'label': prediction,
-                'confidence': confidence,
+                'label': label,
+                'confidence': label,
                 'image': image_url,
+                'probabilities': {
+                    'benign': (1 - pred) * 100,
+                    'malignant': pred * 100
+                },
+                'benign_score': f"{(1 - pred) * 100:.2f}%",
+                'malignant_score': f"{pred * 100:.2f}%"
             },
             'trial_credits': custom_user.trial_credits
         })
@@ -183,3 +249,32 @@ def payment_cancel(request):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+
+# Prediction history view
+@login_required
+def prediction_history(request):
+    try:
+        social = SocialAccount.objects.get(user=request.user, provider='google')
+        google_uid = social.extra_data.get('sub')
+        custom_user = User.objects.get(google_uid=google_uid)
+
+        uploads = PhotoUpload.objects.filter(user_id=custom_user.user_id).order_by('-uploaded_at')
+        from core.models import TestResult
+
+        history = []
+        for upload in uploads:
+            result = TestResult.objects.filter(upload_id=upload.upload_id).first()
+            if result:
+                history.append({
+                    'image': upload.image_url,
+                    'date': upload.uploaded_at,
+                    'label': result.disease_name,
+                    'confidence': result.confidence,
+                })
+
+        return render(request, 'prediction_history.html', {'history': history})
+    
+    except Exception as e:
+        print("⚠️ Failed to load history:", e)
+        return render(request, 'prediction_history.html', {'history': []})

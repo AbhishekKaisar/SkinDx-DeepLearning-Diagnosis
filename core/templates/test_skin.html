@@ -18,6 +18,7 @@
         <a href="{% url 'home' %}" class="active">Home</a>
         <a href="#">About us</a>
         <a href="#">Services</a>
+        <a href="{% url 'prediction_history' %}">Prediction History</a>
         <a href="{% url 'logout' %}" class="btn-login">Hi, {{ user.first_name }}</a>
     </div>
 </nav>
@@ -35,7 +36,14 @@
         <img src="{{ prediction.image }}" alt="Uploaded Image" style="width: 250px; border-radius: 12px; margin-bottom: 20px;">
         <div style="padding: 20px; border: 2px dashed #6495ed; border-radius: 12px; margin-top: 20px; font-size: 20px;">
             <strong>Possible Skin Issue:</strong>
-            <span style="float: right;">{{ prediction.label }} ({{ prediction.confidence }})</span>
+            <span style="float: right;">{{ prediction.label }}</span>
+        </div>
+        <div style="margin-top: 20px; padding: 16px; background-color: #333fe8; border-radius: 12px;">
+            <strong>Confidence Scores:</strong>
+            <ul style="list-style: none; padding-left: 0; margin-top: 10px;">
+                <li>Benign: {{ prediction.probabilities.benign|floatformat:2 }}%</li>
+                <li>Malignant: {{ prediction.probabilities.malignant|floatformat:2 }}%</li>
+            </ul>
         </div>
     {% else %}
         <form method="post" enctype="multipart/form-data">
