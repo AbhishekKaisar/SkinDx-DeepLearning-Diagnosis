@@ -52,6 +52,8 @@ def load_skin_model():
 def home(request):
     return render(request, 'home.html')
 
+def our_vision(request):
+    return render(request, 'our_vision.html')
 
 def login_view(request):
     return render(request, 'login.html')

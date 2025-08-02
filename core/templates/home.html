@@ -22,8 +22,8 @@
             </a>
             <div class="links">
                 <a href="{% url 'home' %}" class="active">Home</a>
-                <a href="#">About us</a>
-                <a href="#">Services</a>
+                <a href="{% url 'our_vision' %}">Our Vision</a>
+                <a href="{% url 'prediction_history' %}">Prediction History</a>
 
                 {% if user.is_authenticated %}
                     <form method="post" action="{% url 'logout' %}" style="display: inline;">
@@ -40,7 +40,7 @@
             <div class="hero-text">
                 <h1>Redefining Skin Diagnostics<br>Through Deep Learning</h1>
                 <p>Our Deep Learning based system analyzes your skin image and identifies possible diseases with precision.</p>
-                <a href="{% url 'test_skin' %}" class="cta">Try Free Now</a>
+                <a href="{% url 'test_skin' %}" class="cta">Try Now</a>
             </div>
             <div class="hero-image">
                 <img src="{% static 'images/hero_icon.png' %}" alt="Skin analysis icon" />

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Test Your Skin</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/skindx_icon.png' %}">
 </head>
 <body>
 <div class="background"></div>
@@ -16,8 +17,7 @@
     </a>
     <div class="links">
         <a href="{% url 'home' %}" class="active">Home</a>
-        <a href="#">About us</a>
-        <a href="#">Services</a>
+        <a href="{% url 'our_vision' %}">Our Vision</a>
         <a href="{% url 'prediction_history' %}">Prediction History</a>
         <a href="{% url 'logout' %}" class="btn-login">Hi, {{ user.first_name }}</a>
     </div>

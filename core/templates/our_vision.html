@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Our Vision - SkinDx</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/skindx_icon.png' %}">
+    <style>
+        .vision-container {
+            max-width: 1000px;
+            margin: 100px auto;
+            background: rgba(255, 255, 255, 0.07);
+            padding: 40px;
+            border-radius: 20px;
+            color: white;
+            line-height: 1.8;
+        }
+        .vision-container h2 {
+            margin-top: 40px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .vision-container ul {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="background"></div>
+<div class="content">
+    <nav>
+        <a href="{% url 'home' %}" class="logo">
+            <img src="{% static 'images/skindx_icon.png' %}" alt="SkinDx Logo">
+            <span>SkinDx</span>
+        </a>
+        <div class="links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'test_skin' %}">Test Now</a>
+            <a href="{% url 'our_vision' %}" class="active">Our Vision</a>
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-login" style="background:white; color:#000;">Hi, {{ user.first_name }}</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-login">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="vision-container">
+        <h1>Our Vision</h1>
+        <p>We are a team of enthusiastic researchers focused on leveraging artificial intelligence and deep learning to improve early disease detection. Our primary goal for this project is to build an efficient and reliable system to distinguish between benign and malignant melanoma using Convolutional Neural Networks (CNN).</p>
+
+        <p>The motivation behind this work is to create a non-invasive, fast, and accessible diagnostic tool that can assist healthcare professionals and individuals in identifying potential skin cancer risks without undergoing complex medical procedures.</p>
+
+        <p>In the future, we aim to enhance this system to work with real-time mobile applications, integrate with dermatology devices, and improve accuracy to a level where it can serve as an initial screening solution even in remote or underserved regions.</p>
+
+        <p>Our vision also includes expanding beyond melanoma to cover multiple skin diseases while continuously refining our algorithms to match or exceed clinical-level performance. Additionally, we plan to incorporate explainable AI techniques so that users and doctors can understand why the model reached its decision, increasing trust and adoption in medical settings.</p>
+
+        <h2>Melanoma and Its Classes</h2>
+
+        <p>Melanoma is one of the most aggressive forms of skin cancer, originating in the melanocytes—the pigment-producing cells of the skin. It often begins as a mole or dark spot but can spread to other parts of the body if not detected early. Early detection is crucial because melanoma has a high cure rate in its initial stages but becomes life-threatening once it metastasizes.</p>
+
+        <ul>
+            <li><strong>Benign Melanoma (Non-cancerous):</strong> Typically harmless moles or lesions that do not show aggressive growth or invasive properties. They appear uniform in color, symmetrical, and have clearly defined borders. Identifying benign cases correctly helps prevent unnecessary medical treatments and anxiety.</li>
+            <li><strong>Malignant Melanoma (Cancerous):</strong> These lesions grow rapidly, invade surrounding tissues, and can spread to other organs. Malignant melanomas may have irregular borders, varied coloration, and asymmetrical shapes. Detecting these early is critical to save lives.</li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

@@ -1,10 +1,11 @@
-{% load static %}
+{% load static custom_math %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Prediction History</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/skindx_icon.png' %}">
 </head>
 <body>
 <div class="background"></div>
@@ -26,12 +27,12 @@
 
 <div class="history-container" style="max-width: 800px; margin: 0 auto;">
     {% if history %}
-        {% for entry in history %}
+        {% for entry in history|slice:":3" %}
             <div style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
-                <img src="{{ entry.image_url }}" alt="Uploaded Image" style="width: 200px; border-radius: 10px; display: block; margin-bottom: 10px;">
-                <p><strong>Prediction:</strong> {{ entry.disease_name }}</p>
-                <p><strong>Confidence:</strong> {{ entry.confidence }}%</p>
-                <p><strong>Date:</strong> {{ entry.tested_at|date:"F j, Y, g:i A" }}</p>
+                <img src="{{ entry.image }}" alt="Uploaded Image" style="width: 200px; border-radius: 10px; display: block; margin-bottom: 10px;">
+                <p><strong>Prediction:</strong> {{ entry.label }}</p>
+                <p><strong>Confidence:</strong> {{ entry.confidence|confidence_percent }}%</p>
+                <p><strong>Date:</strong> {{ entry.date|date:"F j, Y, g:i A" }}</p>
             </div>
         {% endfor %}
     {% else %}
