@@ -68,6 +68,91 @@
             <li><strong>Benign Melanoma (Non-cancerous):</strong> Typically harmless moles or lesions that do not show aggressive growth or invasive properties. They appear uniform in color, symmetrical, and have clearly defined borders. Identifying benign cases correctly helps prevent unnecessary medical treatments and anxiety.</li>
             <li><strong>Malignant Melanoma (Cancerous):</strong> These lesions grow rapidly, invade surrounding tissues, and can spread to other organs. Malignant melanomas may have irregular borders, varied coloration, and asymmetrical shapes. Detecting these early is critical to save lives.</li>
         </ul>
+
+        <h2>Model Training, Evaluation, and Best Approach</h2>
+        <p>
+            We performed data preprocessing, training, and evaluation using Convolutional Neural Networks (CNNs).
+            CNNs are state-of-the-art for image recognition because they automatically learn spatial hierarchies of
+            features from raw pixels without manual feature engineering.
+        </p>
+
+        <h3>1. ResNet50</h3>
+        <p>
+            <strong>Architecture:</strong> 50-layer residual network with skip connections (residual blocks) that help
+            gradients flow during backpropagation and avoid vanishing gradients.
+        </p>
+        <ul>
+            <li><strong>Base Model:</strong> Pre-trained on ImageNet, used as a frozen feature extractor.</li>
+            <li><strong>Added Head:</strong> Global Average Pooling → Dense (256, ReLU) → Dropout (0.5) → Dense (1, sigmoid).</li>
+            <li><strong>Loss & Metrics:</strong> Binary cross-entropy, Accuracy, AUC.</li>
+        </ul>
+        <p>
+            ResNet50 captures complex visual patterns and works well for medical images due to its deep hierarchical features.
+        </p>
+
+        <h3>2. EfficientNetB0</h3>
+        <p>
+            <strong>Architecture:</strong> Compound scaling of depth, width, and resolution to balance accuracy and efficiency.
+        </p>
+        <ul>
+            <li><strong>Base Model:</strong> EfficientNetB0 (ImageNet), frozen during transfer learning.</li>
+            <li><strong>Added Head:</strong> Global Average Pooling → Dense (256, ReLU) → Dropout (0.5) → Dense (1, sigmoid).</li>
+            <li><strong>Loss & Metrics:</strong> Same as above.</li>
+        </ul>
+        <p>
+            EfficientNet achieves high accuracy with fewer parameters—great for real-world deployment on mobile or edge devices.
+        </p>
+
+        <h3>3. DenseNet121</h3>
+        <p>
+            <strong>Architecture:</strong> Dense connections where each layer receives input from all previous layers, enabling
+            feature reuse and better gradient flow with fewer parameters.
+        </p>
+        <ul>
+            <li><strong>Base Model:</strong> DenseNet121 (ImageNet).</li>
+            <li><strong>Added Head:</strong> Global Average Pooling → Dense (256, ReLU) → Dropout (0.5) → Dense (1, sigmoid).</li>
+        </ul>
+        <p>
+            DenseNet models are efficient and particularly strong at learning fine textures common in medical imagery.
+        </p>
+
+        <h3>4. InceptionV3</h3>
+        <p>
+            <strong>Architecture:</strong> Parallel convolutions with different kernel sizes (Inception blocks) to capture
+            multi-scale features. Requires 299×299 input.
+        </p>
+        <ul>
+            <li><strong>Base Model:</strong> InceptionV3 (ImageNet).</li>
+            <li><strong>Added Head:</strong> Global Average Pooling → Dense (256, ReLU) → Dropout (0.5) → Dense (1, sigmoid).</li>
+        </ul>
+        <p>
+            InceptionV3 excels at analyzing subtle, fine-grained details by looking at multiple scales simultaneously.
+        </p>
+
+        <h3>How These Models Were Used</h3>
+        <p>
+            We used transfer learning: the convolutional base was frozen and only the classifier head was trained. This leverages
+            large-scale pretraining and reduces overfitting on smaller medical datasets. We used binary cross-entropy loss and
+            tracked Accuracy and AUC (important for balanced medical performance).
+        </p>
+
+        <h3>Which Model Performed Best?</h3>
+        <p>
+            While exact numbers vary by experiment, <strong>EfficientNetB0</strong> and <strong>DenseNet121</strong> typically offered
+            the best balance of accuracy and generalization on our dataset, with lower risk of overfitting compared to heavier models.
+        </p>
+
+        <h3>Future Goals and Impact</h3>
+        <ul>
+            <li><strong>Mobile App:</strong> Real-time risk analysis from smartphone images.</li>
+            <li><strong>Healthcare Integration:</strong> Use as a screening aid in clinics and tele-dermatology.</li>
+            <li><strong>Multi-Disease Detection:</strong> Extend beyond melanoma to eczema, psoriasis, acne, and more.</li>
+            <li><strong>Explainability:</strong> Highlight lesion regions influencing predictions to build trust.</li>
+            <li><strong>Remote Access:</strong> Support underserved areas with limited specialist availability.</li>
+        </ul>
+        <p>
+            Our goal is faster, more accessible preliminary screening that reduces costs and ultimately saves lives.
+        </p>
     </div>
 </div>
 </body>
